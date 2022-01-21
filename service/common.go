@@ -59,6 +59,7 @@ func GetAllRows(rows *sql.Rows) map[int]map[string]string {
 	return result
 }
 
+// 获取方法
 func GetMethod(class interface{}) {
 	value := reflect.ValueOf(class)
     typ := value.Type()

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>redis-manager</title>
+    <!-- vue -->
+    <script src="/static/js/vue.global.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="/static/css/element-plus@1.1.0-beta.7.css">
+    <!-- 引入组件库 -->
+    <script src="/static/js/element-plus@1.1.0-beta.7.js"></script>
+    <!-- jquery -->
+    <script src="/static/js/jquery-3.5.1.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            padding: 8px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .con>.el-col {
+            margin-bottom: 10px;
+        }
+
+        .operat i {
+            margin: 0 5px;
+            cursor: pointer;
+            transition: .5s;
+        }
+
+        .operat i:hover {
+            color: var(--el-color-primary);
+        }
+
+        .add-btn>.el-form-item__content {
+            margin-left: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <el-card class="box-card">
+            <el-row class="con" :gutter="20">
+                <el-col :span="4">
+                    <el-card class="box-card">
+                        <template #header>
+                            <div class="card-header">
+                                <span>name</span>
+                                <div class="operat">
+                                    <i class="el-icon-folder-opened" title="Import"></i>
+                                    <i class="el-icon-printer" title="Export"></i>
+                                    <i class="el-icon-tickets" title="Console"></i>
+                                    <i class="el-icon-info" title="Info"></i>
+                                    <i class="el-icon-delete" title="Delete"></i>
+                                </div>
+                            </div>
+                        </template>
+                        <div style="margin-bottom: 15px;">Host：127.0.0.1</div>
+                        <div>Port：6379</div>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </el-card>
+
+        <el-dialog title="添加连接" v-model="dialogVisible" width="30%">
+            <el-form label-width="80px">
+                <el-form-item label="Name">
+                    <el-input v-model="connectForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="Host">
+                    <el-input v-model="connectForm.host"></el-input>
+                </el-form-item>
+                <el-form-item label="Port">
+                    <el-input v-model="connectForm.port"></el-input>
+                </el-form-item>
+                <el-form-item label="Auth">
+                    <el-input v-model="connectForm.auth" type="password"></el-input>
+                </el-form-item>
+                <el-form-item class="add-btn">
+                    <el-button @click="testConnect">测试连接</el-button>
+                    <div>
+                        <el-button type="primary" @click="onSubmit">保存</el-button>
+                        <el-button @click="this.dialogVisible = !this.dialogVisible">取消</el-button>
+                    </div>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+    </div>
+
+    <script>
+        const App = {
+            data() {
+                return {
+                    dialogVisible: false,
+                    connectForm: {
+                        name: '',
+                        host: '',
+                        port: '',
+                        auth: '',
+                    }
+                }
+            },
+            methods: {
+                // 添加连接
+                addConnect() {
+                    this.dialogVisible = true
+                },
+                
+                // 测试连接
+                testConnect() {
+                    if(this.connectForm.name === '') {
+                        this.$message.error('连接名不能为空！')
+                        return false
+                    }
+                    if(this.connectForm.host === '') {
+                        this.$message.error('地址不能为空！')
+                        return false
+                    }
+                    if(this.connectForm.port === '') {
+                        this.$message.error('端口不能为空！')
+                        return false
+                    }
+
+                    // 后台测试连接
+                    $.ajax({
+                        url: '/testConnect',
+                        type: 'POST',
+                        data: this.connectForm,
+                        dataType: 'json',
+                        success: (response) => {
+                            console.log(response)
+                        }
+                    })
+                }
+            },
+            created() {
+                window.addConnect = this.addConnect
+            }
+        }
+        const app = Vue.createApp(App)
+        app.use(ElementPlus)
+        app.mount("#app")
+    </script>
+</body>
+
+</html>

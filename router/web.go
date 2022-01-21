@@ -8,5 +8,6 @@ import (
 // 
 func Web (r *gin.Engine) {
 	r.GET("/", controller.Index.Index)
+	r.GET("/home", controller.Home.Index)
 	r.GET("/welcome", controller.Index.Welcome)
 }

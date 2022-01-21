@@ -21,39 +21,85 @@
             padding: 0;
         }
 
-        body{
+        body {
             -webkit-user-select: none;
         }
 
-        .el-header {
-            padding: unset;
+        .el-aside {
+            background-color: rgb(40, 51, 62);
+            height: 100vh;
+            transition: .5s;
         }
 
         .logo {
-            width: 300px;
-            line-height: var(--el-header-height);
+            height: 60px;
             text-align: center;
-            background-color: #00a65a;
+            line-height: 60px;
+            background-color: #192027;
             color: white;
+            white-space: nowrap;
         }
 
-        .el-aside {
-            width: 300px;
-            position: fixed;
+        .el-menu {
+            border-right: 0px;
+        }
+
+        .el-header {
+            line-height: 60px;
+            border-bottom: 1px solid rgb(245, 245, 245);
+        }
+
+        .col-btn, .col-refresh, .col-add {
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: .5s;
+        }
+
+        .col-btn:hover, .col-refresh:hover, .col-add:hover {
+            background-color: #ccc;
+        }
+
+        .search>input {
+            border: unset;
+            border-bottom: 1px solid rgb(220, 223, 230);
+            border-radius: unset;
+        }
+
+        .el-main {
+            padding: unset;
+            overflow: hidden;
+        }
+
+        .el-tabs,
+        .el-tabs__content {
+            height: 100%;
+        }
+
+        .el-tabs--border-card>.el-tabs__header {
+            background-color: unset;
+        }
+
+        .el-tabs__item {
+            border: 1px solid rgb(245, 245, 245) !important;
+        }
+
+        .el-tabs__content {
+            background-color: rgb(242, 242, 242);
+        }
+
+        .el-tab-pane {
+            position: absolute;
+            top: 0;
             left: 0;
-            top: 60px;
+            right: 0;
             bottom: 0;
-            background-color: rgb(32, 34, 42);
-            overflow-x: hidden;
+            padding: 5px;
         }
 
-
-        .el-aside::-webkit-scrollbar {
-            width: 0 !important
-        }
-
-        .is-active>i{
-            color: var(--el-color-primary)!important;
+        iframe {
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
@@ -61,14 +107,69 @@
 <body>
     <div id="app">
         <el-container>
+            <el-aside width="200px" :class="{'el-menu--collapse':isCollapse}">
+                <div class="logo">
+                    <h3 v-if="!isCollapse">Redis Manager</h3>
+                    <h3 v-else>RM</h3>
+                </div>
+                <el-menu :uniqueOpened="true" default-active="0" class="el-menu-vertical-demo" :collapse="isCollapse"
+                    background-color="#28333E" text-color="#fff" active-text-color="#ffd04b">
+                    <el-menu-item index="0">
+                        <i class="el-icon-connection"></i>
+                        <template #title>主页</template>
+                    </el-menu-item>
+                    <el-menu-item index="1">
+                        <i class="el-icon-connection"></i>
+                        <template #title>主页</template>
+                    </el-menu-item>
+                    <el-menu-item index="2">
+                        <i class="el-icon-connection"></i>
+                        <template #title>主页</template>
+                    </el-menu-item>
+                </el-menu>
+            </el-aside>
+            <el-container>
+                <el-header>
+                    <el-row>
+                        <el-col :span="2">
+                            <i class="col-btn" :class="{'el-icon-s-fold':!isCollapse, 'el-icon-s-unfold': isCollapse}"
+                                v-model="isCollapse" @click="isCollapse=!isCollapse"></i>
+                            <i class="el-icon-refresh-right col-refresh" title="刷新" @click="refresh"></i>
+                            <i class="el-icon-plus col-add" title="新建连接" @click="addConnect"></i>
+                        </el-col>
+                        <el-col :span="15">
+                            <el-input class="search" v-model="input" placeholder="搜索"></el-input>
+                        </el-col>
+                    </el-row>
+                </el-header>
+                <el-main>
+                    <el-tabs type="border-card" closable>
+                        <el-tab-pane label="主页">
+                            <iframe src="/home" frameborder="0" class="homepage"></iframe>
+                        </el-tab-pane>
+                        <el-tab-pane label="用户管理">用户管理</el-tab-pane>
+                        <el-tab-pane label="配置管理">配置管理</el-tab-pane>
+                        <el-tab-pane label="角色管理">角色管理</el-tab-pane>
+                        <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
+                    </el-tabs>
+                </el-main>
+            </el-container>
+        </el-container>
+        <!-- <el-container>
+            
+
+
             <el-header>
                 <div class="logo">
                     <h3>Redis Manager</h3>
                 </div>
+                <div class="nav">1</div>
             </el-header>
             <el-container>
                 <el-aside>
-                    <el-menu :uniqueOpened="true" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" background-color="rgb(32,34,42)" text-color="#fff" active-text-color="rgba(19, 206, 102, 0.8">
+                    
+
+                    <el-menu :uniqueOpened="true" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" background-color="rgb(32,34,42)" text-color="#fff" active-text-color="rgba(19, 206, 102, 0.8)">
                         <template v-for="v, k in connectList">
                             <el-sub-menu :index="k" v-if="v.children.length > 0">
                                 <template #title>
@@ -84,34 +185,78 @@
                                 <template #title>{{v.name}}</template>
                             </el-menu-item>
                         </template>
-                    </el-menu>
+                    </el-menu> 
                 </el-aside>
-                <el-main>Main</el-main>
+                <el-main>
+
+                </el-main>
             </el-container>
-        </el-container>
+        </el-container> -->
     </div>
 
     <script>
         const App = {
             data() {
                 return {
-                    connectList: [
-                        {ip: '127.0.0.1', 'port': 6379, name: '127.0.0.1', children: [
-                            {'database': 'db0', 'number': 0},
-                            {'database': 'db1', 'number': 0},
-                            {'database': 'db2', 'number': 0},
-                        ]},
-                        {ip: '127.0.0.1', 'port': 6379, name: '127.0.0.1', children: []},
-                        {ip: '127.0.0.1', 'port': 6379, name: '127.0.0.1', children: []},
-                        {ip: '127.0.0.1', 'port': 6379, name: '127.0.0.1', children: []},
-                    ]
+                    connectList: [{
+                            ip: '127.0.0.1',
+                            'port': 6379,
+                            name: '127.0.0.1',
+                            children: [{
+                                    'database': 'db0',
+                                    'number': 0
+                                },
+                                {
+                                    'database': 'db1',
+                                    'number': 0
+                                },
+                                {
+                                    'database': 'db2',
+                                    'number': 0
+                                },
+                            ]
+                        },
+                        {
+                            ip: '127.0.0.1',
+                            'port': 6379,
+                            name: '127.0.0.1',
+                            children: []
+                        },
+                        {
+                            ip: '127.0.0.1',
+                            'port': 6379,
+                            name: '127.0.0.1',
+                            children: []
+                        },
+                        {
+                            ip: '127.0.0.1',
+                            'port': 6379,
+                            name: '127.0.0.1',
+                            children: []
+                        },
+                    ],
+                    isCollapse: false
                 }
             },
             methods: {
                 onConnect(key, ip, port) {
-                    this.connectList[key].children.push({'database': 'db0', 'number': 0})
+                    this.connectList[key].children.push({
+                        'database': 'db0',
+                        'number': 0
+                    })
+                },
+                // 刷新iframe
+                refresh() {
+                    $('.el-tabs__content').find('iframe').attr('src', $('.el-tabs__content').find('iframe').attr('src'))
+                },
+                // 新建连接
+                addConnect() {
+                    $('.homepage')[0].contentWindow.addConnect()
                 }
             },
+            created() {
+                
+            }
         }
         const app = Vue.createApp(App)
         app.use(ElementPlus)
